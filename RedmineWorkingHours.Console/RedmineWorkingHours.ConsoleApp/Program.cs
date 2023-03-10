@@ -24,5 +24,7 @@ static class Program
     {
         _redmineCommunication = new RedmineCommunication(ServerUrl, ApiKey, TargetUserId);
 
+        double currentWeekHours = _redmineCommunication.GetWeekHours(2023, 10);
+        Console.WriteLine($"Current week hours: {currentWeekHours}");
     }
 }
