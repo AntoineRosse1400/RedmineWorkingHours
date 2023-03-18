@@ -5,6 +5,7 @@ using RedmineWorkingHours.ConsoleApp.Communication;
 using RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 using RedmineWorkingHours.ConsoleApp.Configuration;
 using RedmineWorkingHours.ConsoleApp.Utils;
+using System;
 
 namespace RedmineWorkingHours.ConsoleApp;
 
@@ -18,7 +19,7 @@ static class Program
 
     #region Members
 
-    private static IHoursCalculator _hoursCalculator;
+    private static IServiceProvider _serviceProvider;
 
     #endregion
 
@@ -26,20 +27,14 @@ static class Program
 
     private static void Main(string[] args)
     {
-        ServiceProvider serviceProvider = ConfigureServices();
-        AppConfiguration? appConfiguration = serviceProvider.GetService<AppConfiguration>();
-        IHoursReader? hoursReader = serviceProvider.GetService<IHoursReader>();
-        if (appConfiguration == null)
-            throw new NullReferenceException($"{nameof(AppConfiguration)} service not properly initialized");
-        if (hoursReader == null)
-            throw new NullReferenceException($"{nameof(IHoursReader)} service not properly initialized");
-        _hoursCalculator = new HoursCalculator(appConfiguration, hoursReader);
+        ConfigureServices();
 
+        var appConfiguration = _serviceProvider.GetService<AppConfiguration>();
         DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
         DateTime end = DateTime.Now.AddMonths(-1);
         end = DateTimeUtils.GetLastDateOfMonth(end.Year, end.Month);
 
-        double hoursBalance = _hoursCalculator.GetHoursBalance(begin, end);
+        double hoursBalance = _serviceProvider.GetService<IHoursCalculator>().GetHoursBalance(begin, end);
         Console.WriteLine($"Hours balance: {hoursBalance}");
     }
 
@@ -47,7 +42,7 @@ static class Program
 
     #region Services
 
-    private static ServiceProvider ConfigureServices()
+    private static void ConfigureServices()
     {
         IServiceCollection services = new ServiceCollection();
         IConfiguration configuration = new ConfigurationBuilder()
@@ -56,7 +51,8 @@ static class Program
             .Build();
         services.AddSingleton(_ => GetAppConfiguration(configuration));
         services.AddSingleton<IHoursReader, RedmineCommunication>();
-        return services.BuildServiceProvider();
+        services.AddSingleton<IHoursCalculator, HoursCalculator>();
+        _serviceProvider = services.BuildServiceProvider();
     }
 
     private static AppConfiguration GetAppConfiguration(IConfiguration configuration)
