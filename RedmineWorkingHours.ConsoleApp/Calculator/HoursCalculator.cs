@@ -1,23 +1,24 @@
-﻿using RedmineWorkingHours.ConsoleApp.Communication.Redmine;
+﻿using RedmineWorkingHours.ConsoleApp.Communication;
+using RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 using RedmineWorkingHours.ConsoleApp.Configuration;
 
 namespace RedmineWorkingHours.ConsoleApp.Calculator;
 
-internal class RedmineHoursCalculator : IHoursCalculator
+internal class HoursCalculator : IHoursCalculator
 {
     #region Members
 
-    private readonly RedmineCommunication _redmineCommunication;
+    private readonly IHoursReader _hoursReader;
     private readonly HoursCalculatorConfiguration _configuration;
 
     #endregion
 
     #region Constructor
 
-    public RedmineHoursCalculator(AppConfiguration configuration)
+    public HoursCalculator(AppConfiguration configuration)
     {
         _configuration = configuration.HoursCalculatorConfiguration;
-        _redmineCommunication = new RedmineCommunication(configuration.RedmineConfiguration.ServerUrl, configuration.RedmineConfiguration.ApiKey, configuration.RedmineConfiguration.TargetUserId);
+        _hoursReader = new RedmineCommunication(configuration.RedmineConfiguration.ServerUrl, configuration.RedmineConfiguration.ApiKey, configuration.RedmineConfiguration.TargetUserId);
     }
 
     #endregion
@@ -27,8 +28,8 @@ internal class RedmineHoursCalculator : IHoursCalculator
     public double GetHoursBalance(DateTime begin, DateTime end)
     {
         double expectedHours = GetExpectedHours(begin, end);
-        double workedHours = _redmineCommunication.GetWorkedHoursBetween(begin, end);
-        double vacationHours = _redmineCommunication.GetVacationDaysBetween(begin, end) * 8.0 * _configuration.WorkingPercentage;
+        double workedHours = _hoursReader.GetWorkedHoursBetween(begin, end);
+        double vacationHours = _hoursReader.GetVacationDaysBetween(begin, end) * 8.0 * _configuration.WorkingPercentage;
         return workedHours - expectedHours + vacationHours;
     }
 

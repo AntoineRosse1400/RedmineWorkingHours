@@ -26,7 +26,7 @@ static class Program
     {
         ServiceProvider serviceProvider = ConfigureServices();
         var appConfiguration = serviceProvider.GetService<AppConfiguration>();
-        _hoursCalculator = new RedmineHoursCalculator(appConfiguration);
+        _hoursCalculator = new HoursCalculator(appConfiguration);
 
         DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
         DateTime end = DateTime.Now.AddMonths(-1);

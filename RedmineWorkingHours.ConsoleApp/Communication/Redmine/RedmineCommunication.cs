@@ -1,11 +1,10 @@
-﻿using Redmine.Net.Api;
-using Redmine.Net.Api.Extensions;
+﻿using System.Collections.Specialized;
+using Redmine.Net.Api;
 using Redmine.Net.Api.Types;
-using System.Collections.Specialized;
 
 namespace RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 
-internal class RedmineCommunication
+internal class RedmineCommunication : IHoursReader
 {
     #region Constants
 
@@ -32,7 +31,7 @@ internal class RedmineCommunication
 
     #region Get data from Redmine
 
-    internal double GetWorkedHoursBetween(DateTime begin, DateTime end)
+    public double GetWorkedHoursBetween(DateTime begin, DateTime end)
     {
         var parameters = new NameValueCollection
         {
@@ -45,7 +44,7 @@ internal class RedmineCommunication
         return (double)timeEntries.Select(w => w.Hours).Sum();
     }
 
-    internal double GetVacationDaysBetween(DateTime begin, DateTime end)
+    public double GetVacationDaysBetween(DateTime begin, DateTime end)
     {
         var parameters = new NameValueCollection
         {
