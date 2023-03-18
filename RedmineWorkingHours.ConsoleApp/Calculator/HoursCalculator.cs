@@ -1,6 +1,6 @@
 ﻿using RedmineWorkingHours.ConsoleApp.Communication;
-using RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 using RedmineWorkingHours.ConsoleApp.Configuration;
+using RedmineWorkingHours.ConsoleApp.Utils;
 
 namespace RedmineWorkingHours.ConsoleApp.Calculator;
 
@@ -63,9 +63,50 @@ internal class HoursCalculator : IHoursCalculator
         return expectedHours;
     }
 
-    public double GetRemainingVacationHours(DateTime end)
+    public double GetRemainingVacationDays(DateTime end)
     {
-        throw new NotImplementedException();
+        var begin = new DateTime(_configuration.StartYearIndex, _configuration.StartMonthIndex, 1);
+
+        double remainingVacationDays = 0.0;
+        for (int year = _configuration.StartYearIndex; year <= end.Year; year++)
+        {
+            double allowedVacationDays = GetAllowedVacationDaysForYear(year);
+            double takenVacationDays = 0.0;
+            if (begin.Year == end.Year)
+                takenVacationDays += this.GetTakenVacationDays(year, begin.Month, end.Month);
+            else if (year == end.Year)
+                takenVacationDays += this.GetTakenVacationDays(year, 1, end.Month);
+            else if (year == begin.Year)
+                takenVacationDays += this.GetTakenVacationDays(year, begin.Month, 12);
+            else
+                takenVacationDays += this.GetTakenVacationDays(year, 1, 12);
+
+            remainingVacationDays += (allowedVacationDays - takenVacationDays);
+        }
+
+        return remainingVacationDays;
+    }
+
+    private double GetAllowedVacationDaysForYear(int year)
+    {
+        if (year == _configuration.StartYearIndex)
+            return ((12.0 - _configuration.StartMonthIndex + 1.0) / 12.0) * _configuration.FullTimeYearlyVacationDays * _configuration.WorkingPercentage;
+
+        if (_configuration.EndYearIndex == null || _configuration.EndMonthIndex == null)
+            return _configuration.FullTimeYearlyVacationDays * _configuration.WorkingPercentage;
+
+        if (year == _configuration.EndYearIndex)
+            return _configuration.EndMonthIndex.Value * _configuration.FullTimeYearlyVacationDays * _configuration.WorkingPercentage;
+
+        return _configuration.FullTimeYearlyVacationDays * _configuration.WorkingPercentage;
+    }
+
+    private double GetTakenVacationDays(int year, int beginMonth, int endMonth)
+    {
+        DateTime begin = new DateTime(year, beginMonth, 1);
+        DateTime end = DateTimeUtils.GetLastDateOfMonth(year, endMonth);
+        double takenVacationDays = _hoursReader.GetVacationDaysBetween(begin, end);
+        return takenVacationDays;
     }
 
     #endregion

@@ -90,25 +90,31 @@ internal class HoursMenuManager
 
     private void PrintHoursBalance()
     {
-        var appConfiguration = _serviceProvider.GetService<AppConfiguration>();
-        if (appConfiguration == null)
-            throw new NullReferenceException($"{nameof(AppConfiguration)} service not found.");
+        var appConfiguration = this.GetService<AppConfiguration>();
 
         DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
         DateTime end = DateTime.Now.AddMonths(-1);
         end = DateTimeUtils.GetLastDateOfMonth(end.Year, end.Month);
 
-        var hoursCalculator = _serviceProvider.GetService<IHoursCalculator>();
-        if (hoursCalculator == null)
-            throw new NullReferenceException($"{nameof(IHoursCalculator)} service not found.");
+        var hoursCalculator = this.GetService<IHoursCalculator>();
 
         double hoursBalance = hoursCalculator.GetHoursBalance(begin, end);
         Console.WriteLine($"Hours balance: {hoursBalance}");
     }
 
+    private T GetService<T>()
+    {
+        var service = _serviceProvider.GetService<T>();
+        if (service == null)
+            throw new NullReferenceException($"{typeof(T).Name} service not found.");
+        return service;
+    }
+
     private void PrintVacationDaysBalanceUntilNow()
     {
-        Console.WriteLine("Working on it...");
+        var hoursCalculator = this.GetService<IHoursCalculator>();
+        double remainingVacationDays = hoursCalculator.GetRemainingVacationDays(DateTime.Now);
+        Console.WriteLine($"Remaining vacation days: {remainingVacationDays}");
     }
 
     private void PrintVacationDaysBalanceUntilEndOfYear()

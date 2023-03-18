@@ -11,9 +11,9 @@ public interface IHoursCalculator
     double GetHoursBalance(DateTime begin, DateTime end);
 
     /// <summary>
-    /// Gets the remaining vacation days after <paramref name="end"/>.
+    /// Gets the remaining vacation days until <paramref name="end"/>.
     /// </summary>
     /// <param name="end">The date until which to calculate the balance.</param>
     /// <returns></returns>
-    double GetRemainingVacationHours(DateTime end);
+    double GetRemainingVacationDays(DateTime end);
 }

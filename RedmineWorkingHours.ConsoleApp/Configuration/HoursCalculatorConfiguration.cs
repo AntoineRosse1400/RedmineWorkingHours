@@ -6,7 +6,13 @@ public class HoursCalculatorConfiguration
 
     public int StartMonthIndex { get; set; }
 
+    public int? EndYearIndex { get; set; }
+
+    public int? EndMonthIndex { get; set; }
+
     public double WorkingPercentage { get; set; }
+
+    public int FullTimeYearlyVacationDays { get; set; }
 
     public List<YearlyWorkingHours> YearlyWorkingHours { get; set; } = new();
 }
