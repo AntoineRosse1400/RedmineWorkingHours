@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 
 namespace RedmineWorkingHours.ConsoleApp;
 
@@ -29,5 +30,15 @@ internal static class DateTimeUtils
 
         // Subtract 3 days from Thursday to get Monday, which is the first weekday in ISO8601
         return result.AddDays(-3);
+    }
+
+    public static DateTime GetFirstDateOfMonth(int year, int month)
+    {
+        return new DateTime(year, month, 1);
+    }
+
+    public static DateTime GetLastDateOfMonth(int year, int month)
+    {
+        return new DateTime(year, month, DateTime.DaysInMonth(year, month));
     }
 }

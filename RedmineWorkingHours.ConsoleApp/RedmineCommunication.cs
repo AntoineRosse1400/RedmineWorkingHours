@@ -29,7 +29,7 @@ internal class RedmineCommunication
 
     #endregion
 
-    #region MyRegion
+    #region Get data from Redmine
 
     internal double GetWeekHours(int year, int weekIndex)
     {
@@ -42,6 +42,25 @@ internal class RedmineCommunication
         };
         IEnumerable<TimeEntry> weeklyTimeEntries = _manager.GetObjects<TimeEntry>(parameters);
         return (double)weeklyTimeEntries.Select(w => w.Hours).Sum();
+    }
+
+    internal double GetMonthHours(int year, int month)
+    {
+        if(year > DateTime.Now.Year)
+            throw new ArgumentOutOfRangeException(nameof(year), "Year must be smaller or equal to current year");
+
+        if (month is < 1 or > 12)
+            throw new ArgumentOutOfRangeException(nameof(month), "Month must be between 1 and 12");
+
+        DateTime beginMonthDay = DateTimeUtils.GetFirstDateOfMonth(year, month);
+        DateTime endMonthDay = DateTimeUtils.GetLastDateOfMonth(year, month);
+        var parameters = new NameValueCollection
+        {
+            { RedmineKeys.USER_ID, _targetUserId.ToString() },
+            { RedmineKeys.SPENT_ON, $"><{beginMonthDay.ToString(RedmineDateFormat)}|{endMonthDay.ToString(RedmineDateFormat)}" }
+        };
+        IEnumerable<TimeEntry> monthlyTimeEntries = _manager.GetObjects<TimeEntry>(parameters);
+        return (double)monthlyTimeEntries.Select(w => w.Hours).Sum();
     }
 
     #endregion
