@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RedmineWorkingHours.ConsoleApp.Calculator;
 using RedmineWorkingHours.ConsoleApp.Configuration;
+using RedmineWorkingHours.ConsoleApp.Utils;
 
 namespace RedmineWorkingHours.ConsoleApp;
 
@@ -24,9 +25,14 @@ static class Program
     private static void Main(string[] args)
     {
         ServiceProvider serviceProvider = ConfigureServices();
-        _hoursCalculator = new RedmineHoursCalculator(serviceProvider.GetService<AppConfiguration>());
+        var appConfiguration = serviceProvider.GetService<AppConfiguration>();
+        _hoursCalculator = new RedmineHoursCalculator(appConfiguration);
 
-        double hoursBalance = _hoursCalculator.GetHoursBalance(new DateTime(2022, 12, 1), new DateTime(2023, 2, 28));
+        DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
+        DateTime end = DateTime.Now.AddMonths(-1);
+        end = DateTimeUtils.GetLastDateOfMonth(end.Year, end.Month);
+
+        double hoursBalance = _hoursCalculator.GetHoursBalance(begin, end);
         Console.WriteLine($"Hours balance: {hoursBalance}");
     }
 
