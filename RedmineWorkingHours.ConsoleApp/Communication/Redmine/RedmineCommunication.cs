@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using Redmine.Net.Api;
 using Redmine.Net.Api.Types;
+using RedmineWorkingHours.ConsoleApp.Configuration;
 
 namespace RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 
@@ -21,10 +22,10 @@ internal class RedmineCommunication : IHoursReader
 
     #region Constructor
 
-    internal RedmineCommunication(string serverUrl, string apiKey, int targetUserId)
+    public RedmineCommunication(AppConfiguration configuration)
     {
-        _manager = new RedmineManager(serverUrl, apiKey);
-        _targetUserId = targetUserId;
+        _manager = new RedmineManager(configuration.RedmineConfiguration.ServerUrl, configuration.RedmineConfiguration.ApiKey);
+        _targetUserId = configuration.RedmineConfiguration.TargetUserId;
     }
 
     #endregion

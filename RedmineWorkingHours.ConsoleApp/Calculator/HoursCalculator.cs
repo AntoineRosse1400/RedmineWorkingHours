@@ -15,10 +15,10 @@ internal class HoursCalculator : IHoursCalculator
 
     #region Constructor
 
-    public HoursCalculator(AppConfiguration configuration)
+    public HoursCalculator(AppConfiguration configuration, IHoursReader hoursReader)
     {
         _configuration = configuration.HoursCalculatorConfiguration;
-        _hoursReader = new RedmineCommunication(configuration.RedmineConfiguration.ServerUrl, configuration.RedmineConfiguration.ApiKey, configuration.RedmineConfiguration.TargetUserId);
+        _hoursReader = hoursReader;
     }
 
     #endregion

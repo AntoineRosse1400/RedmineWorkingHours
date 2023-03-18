@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RedmineWorkingHours.ConsoleApp.Calculator;
+using RedmineWorkingHours.ConsoleApp.Communication;
+using RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 using RedmineWorkingHours.ConsoleApp.Configuration;
 using RedmineWorkingHours.ConsoleApp.Utils;
 
@@ -25,8 +27,13 @@ static class Program
     private static void Main(string[] args)
     {
         ServiceProvider serviceProvider = ConfigureServices();
-        var appConfiguration = serviceProvider.GetService<AppConfiguration>();
-        _hoursCalculator = new HoursCalculator(appConfiguration);
+        AppConfiguration? appConfiguration = serviceProvider.GetService<AppConfiguration>();
+        IHoursReader? hoursReader = serviceProvider.GetService<IHoursReader>();
+        if (appConfiguration == null)
+            throw new NullReferenceException($"{nameof(AppConfiguration)} service not properly initialized");
+        if (hoursReader == null)
+            throw new NullReferenceException($"{nameof(IHoursReader)} service not properly initialized");
+        _hoursCalculator = new HoursCalculator(appConfiguration, hoursReader);
 
         DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
         DateTime end = DateTime.Now.AddMonths(-1);
@@ -48,6 +55,7 @@ static class Program
             .AddJsonFile(AppSettingsFileName, optional: true, reloadOnChange: true)
             .Build();
         services.AddSingleton(_ => GetAppConfiguration(configuration));
+        services.AddSingleton<IHoursReader, RedmineCommunication>();
         return services.BuildServiceProvider();
     }
 
