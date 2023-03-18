@@ -2,7 +2,7 @@
 using Redmine.Net.Api.Types;
 using System.Collections.Specialized;
 
-namespace RedmineWorkingHours.ConsoleApp;
+namespace RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 
 internal class RedmineCommunication
 {

@@ -1,4 +1,7 @@
-﻿namespace RedmineWorkingHours.ConsoleApp;
+﻿using RedmineWorkingHours.ConsoleApp.Communication.Redmine;
+using RedmineWorkingHours.ConsoleApp.Configuration;
+
+namespace RedmineWorkingHours.ConsoleApp.Calculator;
 
 internal class RedmineHoursCalculator : IHoursCalculator
 {

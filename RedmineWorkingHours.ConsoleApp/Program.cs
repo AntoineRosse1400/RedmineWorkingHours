@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RedmineWorkingHours.ConsoleApp.Calculator;
+using RedmineWorkingHours.ConsoleApp.Configuration;
 
 namespace RedmineWorkingHours.ConsoleApp;
 

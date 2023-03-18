@@ -1,4 +1,4 @@
-﻿namespace RedmineWorkingHours.ConsoleApp;
+﻿namespace RedmineWorkingHours.ConsoleApp.Calculator;
 
 public interface IHoursCalculator
 {

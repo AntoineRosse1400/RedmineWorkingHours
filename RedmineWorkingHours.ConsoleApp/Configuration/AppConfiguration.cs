@@ -1,4 +1,4 @@
-﻿namespace RedmineWorkingHours.ConsoleApp;
+﻿namespace RedmineWorkingHours.ConsoleApp.Configuration;
 
 internal class AppConfiguration
 {
