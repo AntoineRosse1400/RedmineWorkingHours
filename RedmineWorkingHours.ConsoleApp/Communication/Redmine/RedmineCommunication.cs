@@ -45,7 +45,7 @@ internal class RedmineCommunication
         return (double)timeEntries.Select(w => w.Hours).Sum();
     }
 
-    internal double GetVacationHoursBetween(DateTime begin, DateTime end)
+    internal double GetVacationDaysBetween(DateTime begin, DateTime end)
     {
         var parameters = new NameValueCollection
         {
@@ -59,7 +59,7 @@ internal class RedmineCommunication
         IEnumerable<Issue> vacationsInTimeFrame = allVacations
             .Where(i => i.StartDate >= begin && i.DueDate <= end);
 
-        double vacationHours = 0.0;
+        double vacationDays = 0.0;
         foreach (Issue vacation in vacationsInTimeFrame)
         {
             if (vacation.DueDate == null || vacation.StartDate == null)
@@ -68,9 +68,9 @@ internal class RedmineCommunication
             TimeSpan? vacationDuration = vacation.DueDate.Value.AddDays(1.0) - vacation.StartDate;
             if (vacationDuration == null)
                 throw new NotSupportedException($"Inconsistent vacation issue date (start: {vacation.StartDate}, due: {vacation.DueDate})");
-            vacationHours += vacationDuration.Value.Days * 8.0;
+            vacationDays += vacationDuration.Value.Days;
         }
-        return vacationHours;
+        return vacationDays;
     }
 
     #endregion

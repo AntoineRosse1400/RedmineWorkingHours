@@ -28,7 +28,7 @@ internal class RedmineHoursCalculator : IHoursCalculator
     {
         double expectedHours = GetExpectedHours(begin, end);
         double workedHours = _redmineCommunication.GetWorkedHoursBetween(begin, end);
-        double vacationHours = _redmineCommunication.GetVacationHoursBetween(begin, end);
+        double vacationHours = _redmineCommunication.GetVacationDaysBetween(begin, end) * 8.0 * _configuration.WorkingPercentage;
         return workedHours - expectedHours + vacationHours;
     }
 
