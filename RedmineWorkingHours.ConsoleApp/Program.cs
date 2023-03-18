@@ -1,6 +1,5 @@
-﻿using Redmine.Net.Api;
-using Redmine.Net.Api.Types;
-using System.Collections.Specialized;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RedmineWorkingHours.ConsoleApp;
 
@@ -8,23 +7,48 @@ static class Program
 {
     #region Constants
 
-    private const string ServerUrl = "https://redmine.adonite.com/";
-    private const string ApiKey = "ed8946d0d93fe5b8acba4e47801fa7e469fcf38b";
-    private const int TargetUserId = 57;
+    private const string AppSettingsFileName = "appsettings.json";
 
     #endregion
 
     #region Members
 
-    private static RedmineCommunication _redmineCommunication;
+    private static IHoursCalculator _hoursCalculator;
 
     #endregion
 
+    #region Main
+
     private static void Main(string[] args)
     {
-        _redmineCommunication = new RedmineCommunication(ServerUrl, ApiKey, TargetUserId);
+        ServiceProvider serviceProvider = ConfigureServices();
+        _hoursCalculator = new RedmineHoursCalculator(serviceProvider.GetService<AppConfiguration>());
 
-        double februaryHours = _redmineCommunication.GetMonthHours(2023, 2);
-        Console.WriteLine($"February hours: {februaryHours}");
+        double hoursBalance = _hoursCalculator.GetHoursBalance(new DateTime(2023, 2, 1), new DateTime(2023, 2, 28));
+        Console.WriteLine($"Hours balance: {hoursBalance}");
     }
+
+    #endregion
+
+    #region Services
+
+    private static ServiceProvider ConfigureServices()
+    {
+        IServiceCollection services = new ServiceCollection();
+        IConfiguration configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory()) //From NuGet Package Microsoft.Extensions.Configuration.Json
+            .AddJsonFile(AppSettingsFileName, optional: true, reloadOnChange: true)
+            .Build();
+        services.AddSingleton(_ => GetAppConfiguration(configuration));
+        return services.BuildServiceProvider();
+    }
+
+    private static AppConfiguration GetAppConfiguration(IConfiguration configuration)
+    {
+        AppConfiguration appConfiguration = new();
+        configuration.Bind(appConfiguration);
+        return appConfiguration;
+    }
+
+    #endregion
 }

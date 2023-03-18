@@ -1,0 +1,12 @@
+﻿namespace RedmineWorkingHours.ConsoleApp;
+
+public class HoursCalculatorConfiguration
+{
+    public int StartYearIndex { get; set; }
+
+    public int StartMonthIndex { get; set; }
+
+    public double WorkingPercentage { get; set; }
+
+    public List<double> ExpectedHoursPerMonth { get; set; } = new();
+}
