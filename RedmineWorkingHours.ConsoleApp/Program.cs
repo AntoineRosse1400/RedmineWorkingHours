@@ -26,7 +26,7 @@ static class Program
         ServiceProvider serviceProvider = ConfigureServices();
         _hoursCalculator = new RedmineHoursCalculator(serviceProvider.GetService<AppConfiguration>());
 
-        double hoursBalance = _hoursCalculator.GetHoursBalance(new DateTime(2023, 2, 1), new DateTime(2023, 2, 28));
+        double hoursBalance = _hoursCalculator.GetHoursBalance(new DateTime(2022, 12, 1), new DateTime(2023, 2, 28));
         Console.WriteLine($"Hours balance: {hoursBalance}");
     }
 

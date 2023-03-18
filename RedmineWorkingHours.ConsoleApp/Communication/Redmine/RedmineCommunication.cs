@@ -1,4 +1,5 @@
 ﻿using Redmine.Net.Api;
+using Redmine.Net.Api.Extensions;
 using Redmine.Net.Api.Types;
 using System.Collections.Specialized;
 
@@ -31,7 +32,7 @@ internal class RedmineCommunication
 
     #region Get data from Redmine
 
-    internal double GetHoursBetween(DateTime begin, DateTime end)
+    internal double GetWorkedHoursBetween(DateTime begin, DateTime end)
     {
         var parameters = new NameValueCollection
         {
@@ -42,6 +43,34 @@ internal class RedmineCommunication
         if (timeEntries == null)
             return 0.0;
         return (double)timeEntries.Select(w => w.Hours).Sum();
+    }
+
+    internal double GetVacationHoursBetween(DateTime begin, DateTime end)
+    {
+        var parameters = new NameValueCollection
+        {
+            { RedmineKeys.ASSIGNED_TO_ID, _targetUserId.ToString() },
+            { RedmineKeys.PROJECT_ID, 10.ToString() },
+            { RedmineKeys.TRACKER_ID, 7.ToString() }
+        };
+        IEnumerable<Issue>? allVacations = _manager.GetObjects<Issue>(parameters);
+        if (allVacations == null)
+            return 0.0;
+        IEnumerable<Issue> vacationsInTimeFrame = allVacations
+            .Where(i => i.StartDate >= begin && i.DueDate <= end);
+
+        double vacationHours = 0.0;
+        foreach (Issue vacation in vacationsInTimeFrame)
+        {
+            if (vacation.DueDate == null || vacation.StartDate == null)
+                continue;
+
+            TimeSpan? vacationDuration = vacation.DueDate.Value.AddDays(1.0) - vacation.StartDate;
+            if (vacationDuration == null)
+                throw new NotSupportedException($"Inconsistent vacation issue date (start: {vacation.StartDate}, due: {vacation.DueDate})");
+            vacationHours += vacationDuration.Value.Days * 8.0;
+        }
+        return vacationHours;
     }
 
     #endregion
