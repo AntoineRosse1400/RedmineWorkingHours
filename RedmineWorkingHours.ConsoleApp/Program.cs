@@ -4,8 +4,6 @@ using RedmineWorkingHours.ConsoleApp.Calculator;
 using RedmineWorkingHours.ConsoleApp.Communication;
 using RedmineWorkingHours.ConsoleApp.Communication.Redmine;
 using RedmineWorkingHours.ConsoleApp.Configuration;
-using RedmineWorkingHours.ConsoleApp.Utils;
-using System;
 
 namespace RedmineWorkingHours.ConsoleApp;
 
@@ -19,7 +17,7 @@ static class Program
 
     #region Members
 
-    private static IServiceProvider _serviceProvider;
+    private static ServiceProvider _serviceProvider;
 
     #endregion
 
@@ -28,14 +26,8 @@ static class Program
     private static void Main(string[] args)
     {
         ConfigureServices();
-
-        var appConfiguration = _serviceProvider.GetService<AppConfiguration>();
-        DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
-        DateTime end = DateTime.Now.AddMonths(-1);
-        end = DateTimeUtils.GetLastDateOfMonth(end.Year, end.Month);
-
-        double hoursBalance = _serviceProvider.GetService<IHoursCalculator>().GetHoursBalance(begin, end);
-        Console.WriteLine($"Hours balance: {hoursBalance}");
+        HoursMenuManager menuManager = new HoursMenuManager(_serviceProvider);
+        menuManager.Run();
     }
 
     #endregion
