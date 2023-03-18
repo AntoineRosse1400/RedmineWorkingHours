@@ -38,13 +38,13 @@ internal class RedmineHoursCalculator : IHoursCalculator
         for (int year = begin.Year; year <= end.Year; year++)
         {
             if (begin.Year == end.Year)
-                expectedHours += this.GetExpectedHours(end.Year, begin.Month, end.Month);
+                expectedHours += GetExpectedHours(year, begin.Month, end.Month);
             else if (year == end.Year)
-                expectedHours += this.GetExpectedHours(end.Year, 1, end.Month);
+                expectedHours += GetExpectedHours(year, 1, end.Month);
             else if (year == begin.Year)
-                expectedHours += this.GetExpectedHours(begin.Year, begin.Month, 12);
+                expectedHours += GetExpectedHours(year, begin.Month, 12);
             else
-                expectedHours += this.GetExpectedHours(end.Year, 1, 12);
+                expectedHours += GetExpectedHours(year, 1, 12);
         }
         return expectedHours * _configuration.WorkingPercentage;
     }
