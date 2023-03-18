@@ -99,7 +99,12 @@ internal class HoursMenuManager
         var hoursCalculator = this.GetService<IHoursCalculator>();
 
         double hoursBalance = hoursCalculator.GetHoursBalance(begin, end);
-        Console.WriteLine($"Hours balance: {hoursBalance}");
+        Console.WriteLine($"Hours balance: {FormatToTwoDecimals(hoursBalance)} hours");
+    }
+
+    private static string FormatToTwoDecimals(double value)
+    {
+        return string.Format("{0:N2}", value);
     }
 
     private T GetService<T>()
@@ -114,12 +119,15 @@ internal class HoursMenuManager
     {
         var hoursCalculator = this.GetService<IHoursCalculator>();
         double remainingVacationDays = hoursCalculator.GetRemainingVacationDays(DateTime.Now);
-        Console.WriteLine($"Remaining vacation days: {remainingVacationDays}");
+        Console.WriteLine($"Remaining vacation days: {FormatToTwoDecimals(remainingVacationDays)} days");
     }
 
     private void PrintVacationDaysBalanceUntilEndOfYear()
     {
-        Console.WriteLine("Working on it...");
+        var hoursCalculator = this.GetService<IHoursCalculator>();
+        DateTime endOfYear = new DateTime(DateTime.Now.Year, 12, 31);
+        double remainingVacationDays = hoursCalculator.GetRemainingVacationDays(endOfYear);
+        Console.WriteLine($"Remaining vacation days: {FormatToTwoDecimals(remainingVacationDays)} days");
     }
 
     #endregion
