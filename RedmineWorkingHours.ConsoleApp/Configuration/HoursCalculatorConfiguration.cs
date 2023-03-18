@@ -8,5 +8,5 @@ public class HoursCalculatorConfiguration
 
     public double WorkingPercentage { get; set; }
 
-    public List<double> ExpectedHoursPerMonth { get; set; } = new();
+    public List<YearlyWorkingHours> YearlyWorkingDays { get; set; } = new();
 }
