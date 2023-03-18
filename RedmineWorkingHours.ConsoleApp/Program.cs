@@ -9,7 +9,7 @@ static class Program
 {
     #region Constants
 
-    private const string AppSettingsFileName = "appsettings.json";
+    private const string AppSettingsFileName = "D:/Adonite/Data/RedmineWorkingHours/appsettings.json";
 
     #endregion
 
