@@ -35,32 +35,19 @@ internal class HoursCalculator : IHoursCalculator
 
     private double GetExpectedHours(DateTime begin, DateTime end)
     {
-        double expectedHours = 0.0;
-        for (int year = begin.Year; year <= end.Year; year++)
-        {
-            if (begin.Year == end.Year)
-                expectedHours += GetExpectedHours(year, begin.Month, end.Month);
-            else if (year == end.Year)
-                expectedHours += GetExpectedHours(year, 1, end.Month);
-            else if (year == begin.Year)
-                expectedHours += GetExpectedHours(year, begin.Month, 12);
-            else
-                expectedHours += GetExpectedHours(year, 1, 12);
-        }
-        return expectedHours * _configuration.WorkingPercentage;
+        int workingDays = this.GetWorkingDays(begin, end);
+        return workingDays * _configuration.ExpectedDailyHours * _configuration.WorkingPercentage;
     }
 
-    private double GetExpectedHours(int year, int beginMonth, int endMonth)
+    private int GetWorkingDays(DateTime begin, DateTime end)
     {
-        double expectedHours = 0.0;
-        YearlyWorkingHours? beginYearWorkingHours = _configuration
-            .YearlyWorkingHours
-            .FirstOrDefault(y => y.Year == year);
-        if (beginYearWorkingHours == null)
-            throw new InvalidOperationException($"No data found for year {year} in configuration. Please check the configuration file.");
-        for (int month = beginMonth; month <= endMonth; month++)
-            expectedHours += beginYearWorkingHours.MonthlyWorkingHours[month - 1];
-        return expectedHours;
+        int weekDaysCount = DateTimeUtils.GetWeekDays(begin, end);
+
+        int publicHolidaysCount = _configuration.PublicHolidays
+            .Where(d => d.DayOfWeek != DayOfWeek.Saturday && d.DayOfWeek != DayOfWeek.Sunday)
+            .Count(d => d >= begin && d <= end);
+
+        return weekDaysCount - publicHolidaysCount;
     }
 
     public double GetRemainingVacationDays(DateTime end)
@@ -81,7 +68,7 @@ internal class HoursCalculator : IHoursCalculator
             else
                 takenVacationDays += this.GetTakenVacationDays(year, 1, 12);
 
-            remainingVacationDays += (allowedVacationDays - takenVacationDays);
+            remainingVacationDays += allowedVacationDays - takenVacationDays;
         }
 
         return remainingVacationDays;
@@ -90,7 +77,7 @@ internal class HoursCalculator : IHoursCalculator
     private double GetAllowedVacationDaysForYear(int year)
     {
         if (year == _configuration.StartYearIndex)
-            return ((12.0 - _configuration.StartMonthIndex + 1.0) / 12.0) * _configuration.FullTimeYearlyVacationDays * _configuration.WorkingPercentage;
+            return (12.0 - _configuration.StartMonthIndex + 1.0) / 12.0 * _configuration.FullTimeYearlyVacationDays * _configuration.WorkingPercentage;
 
         if (_configuration.EndYearIndex == null || _configuration.EndMonthIndex == null)
             return _configuration.FullTimeYearlyVacationDays * _configuration.WorkingPercentage;

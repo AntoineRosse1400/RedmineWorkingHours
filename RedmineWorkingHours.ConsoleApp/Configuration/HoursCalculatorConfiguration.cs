@@ -10,9 +10,11 @@ public class HoursCalculatorConfiguration
 
     public int? EndMonthIndex { get; set; }
 
+    public double ExpectedDailyHours { get; set; }
+
     public double WorkingPercentage { get; set; }
 
     public int FullTimeYearlyVacationDays { get; set; }
 
-    public List<YearlyWorkingHours> YearlyWorkingHours { get; set; } = new();
+    public List<DateTime> PublicHolidays { get; set; } = new();
 }
