@@ -111,7 +111,8 @@ internal class HoursMenuManager
         var hoursCalculator = GetService<IHoursCalculator>();
         double hoursBalance = hoursCalculator.GetHoursBalance(begin, DateTime.Now);
 
-        Console.WriteLine($"Hours balance from {begin.Date.ToShortDateString()} until now: {FormatToTwoDecimals(hoursBalance)} hours");
+        Console.WriteLine($"Hours balance from {begin.Date.ToShortDateString()} " +
+                          $"until now: {FormatToTwoDecimals(hoursBalance)} hours");
     }
 
     private void PrintHoursBalanceForMonth()
@@ -125,12 +126,22 @@ internal class HoursMenuManager
         var hoursCalculator = GetService<IHoursCalculator>();
         double hoursBalance = hoursCalculator.GetHoursBalance(begin, end);
 
-        Console.WriteLine($"Hours balance for {year}.{month}: {FormatToTwoDecimals(hoursBalance)} hours");
+        Console.WriteLine($"Hours balance for {year}.{month}: " +
+                          $"{FormatToTwoDecimals(hoursBalance)} hours");
     }
 
     private void PrintHoursBalanceUntilDate()
     {
-        throw new NotImplementedException();
+        var appConfiguration = GetService<AppConfiguration>();
+        DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
+        DateTime end = GetDateTimeEntry("Date until", begin, DateTime.MaxValue);
+
+        var hoursCalculator = GetService<IHoursCalculator>();
+        double hoursBalance = hoursCalculator.GetHoursBalance(begin, end);
+
+        Console.WriteLine($"Hours balance from {begin.Date.ToShortDateString()} " +
+                          $"until {end.Date.ToShortDateString()}: " +
+                          $"{FormatToTwoDecimals(hoursBalance)} hours");
     }
 
     private void PrintHoursBalanceBetween()
@@ -190,11 +201,38 @@ internal class HoursMenuManager
             validEntry = int.TryParse(userEntry, out userEntryInt);
             if (!validEntry)
                 Console.WriteLine("Not a valid number");
-            if (userEntryInt < minValue || userEntryInt > maxValue)
+            else if (userEntryInt < minValue && userEntryInt > maxValue)
+            {
                 Console.WriteLine($"Value must be between {minValue} && {maxValue}");
+                validEntry = false;
+            }
         } while (!validEntry);
 
         return userEntryInt;
+    }
+
+    private DateTime GetDateTimeEntry(string valueName, DateTime minValue, DateTime maxValue)
+    {
+        bool validEntry = false;
+        DateTime userEntryDateTime = DateTime.Now;
+        do
+        {
+            Console.Write(valueName + " (dd.mm.yyy): ");
+            string? userEntry = Console.ReadLine();
+            if (userEntry == null)
+                continue;
+
+            validEntry = DateTime.TryParse(userEntry, out userEntryDateTime);
+            if (!validEntry)
+                Console.WriteLine("Not a valid date");
+            else if (userEntryDateTime < minValue || userEntryDateTime > maxValue)
+            {
+                Console.WriteLine($"Value must be between {minValue.ToShortDateString()} && {maxValue.ToShortDateString()}");
+                validEntry = false;
+            }
+        } while (!validEntry);
+
+        return userEntryDateTime;
     }
 
     #endregion
