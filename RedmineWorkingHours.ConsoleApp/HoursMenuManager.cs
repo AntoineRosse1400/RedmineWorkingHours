@@ -146,7 +146,17 @@ internal class HoursMenuManager
 
     private void PrintHoursBalanceBetween()
     {
-        throw new NotImplementedException();
+        var appConfiguration = GetService<AppConfiguration>();
+        DateTime minValue = DateTimeUtils.GetFirstDateOfMonth(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex);
+        DateTime begin = GetDateTimeEntry("Date from", minValue, DateTime.MaxValue);
+        DateTime end = GetDateTimeEntry("Date until", begin, DateTime.MaxValue);
+
+        var hoursCalculator = GetService<IHoursCalculator>();
+        double hoursBalance = hoursCalculator.GetHoursBalance(begin, end);
+
+        Console.WriteLine($"Hours balance from {begin.Date.ToShortDateString()} " +
+                          $"until {end.Date.ToShortDateString()}: " +
+                          $"{FormatToTwoDecimals(hoursBalance)} hours");
     }
 
     #endregion
