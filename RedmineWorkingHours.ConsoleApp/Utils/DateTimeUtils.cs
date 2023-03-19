@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-
-namespace RedmineWorkingHours.ConsoleApp.Utils;
+﻿namespace RedmineWorkingHours.ConsoleApp.Utils;
 
 internal static class DateTimeUtils
 {

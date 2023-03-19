@@ -17,16 +17,16 @@ static class Program
 
     #region Members
 
-    private static ServiceProvider _serviceProvider;
+    private static ServiceProvider? _serviceProvider;
 
     #endregion
 
     #region Main
 
-    private static void Main(string[] args)
+    private static void Main()
     {
         ConfigureServices();
-        HoursMenuManager menuManager = new HoursMenuManager(_serviceProvider);
+        HoursMenuManager menuManager = new HoursMenuManager(_serviceProvider!);
         menuManager.Run();
     }
 
