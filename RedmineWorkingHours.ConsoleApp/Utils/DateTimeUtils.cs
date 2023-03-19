@@ -11,6 +11,11 @@ internal static class DateTimeUtils
                           (begin.DayOfWeek - end.DayOfWeek) * 2) / 7);
     }
 
+    public static DateTime GetFirstDateOfMonth(int year, int month)
+    {
+        return new DateTime(year, month, 1);
+    }
+
     public static DateTime GetLastDateOfMonth(int year, int month)
     {
         return new DateTime(year, month, DateTime.DaysInMonth(year, month));
