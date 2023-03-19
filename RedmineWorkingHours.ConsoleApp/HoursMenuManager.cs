@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RedmineWorkingHours.ConsoleApp.Calculator;
 using RedmineWorkingHours.ConsoleApp.Configuration;
-using RedmineWorkingHours.ConsoleApp.Utils;
 
 namespace RedmineWorkingHours.ConsoleApp;
 
@@ -30,7 +29,7 @@ internal class HoursMenuManager
         bool mustExit;
         do
         {
-            mustExit = ExecuteOneMenuAction();
+            mustExit = this.PrintMenuAndAskUserEntry();
         } while (!mustExit);
     }
 
@@ -39,7 +38,7 @@ internal class HoursMenuManager
         Console.WriteLine("==================== WORKING HOURS BALANCE ====================");
     }
 
-    private bool ExecuteOneMenuAction()
+    private bool PrintMenuAndAskUserEntry()
     {
         PrintMenu();
         return UserEntry();
@@ -49,7 +48,7 @@ internal class HoursMenuManager
     {
         Console.WriteLine();
         Console.WriteLine("Select the action to execute:");
-        Console.WriteLine("1. Hours balance until last month");
+        Console.WriteLine("1. Hours balance until now");
         Console.WriteLine("2. Vacation days balance until now");
         Console.WriteLine("3. Vacation days balance until end of year");
         Console.WriteLine("0. Exit");
@@ -74,13 +73,13 @@ internal class HoursMenuManager
             case 0:
                 return true;
             case 1:
-                this.PrintHoursBalance();
+                PrintHoursBalanceUntilNow();
                 break;
             case 2:
-                this.PrintVacationDaysBalanceUntilNow();
+                PrintVacationDaysBalanceUntilNow();
                 break;
             case 3:
-                this.PrintVacationDaysBalanceUntilEndOfYear();
+                PrintVacationDaysBalanceUntilEndOfYear();
                 break;
             default:
                 return false;
@@ -88,17 +87,15 @@ internal class HoursMenuManager
         return false;
     }
 
-    private void PrintHoursBalance()
+    private void PrintHoursBalanceUntilNow()
     {
         var appConfiguration = this.GetService<AppConfiguration>();
 
         DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
-        DateTime end = DateTime.Now.AddMonths(-1);
-        end = DateTimeUtils.GetLastDateOfMonth(end.Year, end.Month);
 
         var hoursCalculator = this.GetService<IHoursCalculator>();
 
-        double hoursBalance = hoursCalculator.GetHoursBalance(begin, end);
+        double hoursBalance = hoursCalculator.GetHoursBalance(begin, DateTime.Now);
         Console.WriteLine($"Hours balance: {FormatToTwoDecimals(hoursBalance)} hours");
     }
 
