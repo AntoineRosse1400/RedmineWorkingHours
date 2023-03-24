@@ -49,12 +49,14 @@ internal class HoursMenuManager
     {
         Console.WriteLine();
         Console.WriteLine("Select the action to execute:");
-        Console.WriteLine("1. Hours balance until now");
-        Console.WriteLine("2. Hours balance for specific month");
-        Console.WriteLine("3. Hours balance until specific date");
-        Console.WriteLine("4. Hours balance between 2 specific dates");
-        Console.WriteLine("5. Vacation days balance until now");
-        Console.WriteLine("6. Vacation days balance until end of year");
+        int menuIndex = 0;
+        Console.WriteLine($"{++menuIndex}. Hours balance until yesterday");
+        Console.WriteLine($"{++menuIndex}. Hours balance until today");
+        Console.WriteLine($"{++menuIndex}. Hours balance for specific month");
+        Console.WriteLine($"{++menuIndex}. Hours balance until specific date");
+        Console.WriteLine($"{++menuIndex}. Hours balance between 2 specific dates");
+        Console.WriteLine($"{++menuIndex}. Vacation days balance until now");
+        Console.WriteLine($"{++menuIndex}. Vacation days balance until end of year");
         Console.WriteLine("0. Exit");
     }
 
@@ -77,21 +79,24 @@ internal class HoursMenuManager
             case 0:
                 return true;
             case 1:
-                PrintHoursBalanceUntilNow();
+                PrintHoursBalanceUntilYesterday();
                 break;
             case 2:
-                PrintHoursBalanceForMonth();
+                PrintHoursBalanceUntilToday();
                 break;
             case 3:
-                PrintHoursBalanceUntilDate();
+                PrintHoursBalanceForMonth();
                 break;
             case 4:
-                PrintHoursBalanceBetween();
+                PrintHoursBalanceUntilDate();
                 break;
             case 5:
-                PrintVacationDaysBalanceUntilNow();
+                PrintHoursBalanceBetween();
                 break;
             case 6:
+                PrintVacationDaysBalanceUntilNow();
+                break;
+            case 7:
                 PrintVacationDaysBalanceUntilEndOfYear();
                 break;
             default:
@@ -102,7 +107,20 @@ internal class HoursMenuManager
 
     #region Hours balance
 
-    private void PrintHoursBalanceUntilNow()
+    private void PrintHoursBalanceUntilYesterday()
+    {
+        var appConfiguration = GetService<AppConfiguration>();
+
+        DateTime begin = new DateTime(appConfiguration.HoursCalculatorConfiguration.StartYearIndex, appConfiguration.HoursCalculatorConfiguration.StartMonthIndex, 1);
+
+        var hoursCalculator = GetService<IHoursCalculator>();
+        double hoursBalance = hoursCalculator.GetHoursBalance(begin, DateTime.Now.AddDays(-1));
+
+        Console.WriteLine($"Hours balance from {begin.Date.ToShortDateString()} " +
+                          $"until yesterday: {FormatToTwoDecimals(hoursBalance)} hours");
+    }
+
+    private void PrintHoursBalanceUntilToday()
     {
         var appConfiguration = GetService<AppConfiguration>();
 
@@ -112,7 +130,7 @@ internal class HoursMenuManager
         double hoursBalance = hoursCalculator.GetHoursBalance(begin, DateTime.Now);
 
         Console.WriteLine($"Hours balance from {begin.Date.ToShortDateString()} " +
-                          $"until now: {FormatToTwoDecimals(hoursBalance)} hours");
+                          $"until today: {FormatToTwoDecimals(hoursBalance)} hours");
     }
 
     private void PrintHoursBalanceForMonth()
